@@ -1,5 +1,5 @@
 # Timer App
-Visit website: <a href="https://timerapp-ckeyg9gfa5behnce.germanywestcentral-01.azurewebsites.net/" target="_blank" rel="noopener noreferrer">link</a>
+Visit website: <a href="https://timer-app.politepebble-437e5ece.polandcentral.azurecontainerapps.io" target="_blank" rel="noopener noreferrer">link</a>
 
 
 
