@@ -1,5 +1,6 @@
 # Timer App
-Visit website: [link](https://timerapp-ckeyg9gfa5behnce.germanywestcentral-01.azurewebsites.net/)
+Visit website: <a href="https://timerapp-ckeyg9gfa5behnce.germanywestcentral-01.azurewebsites.net/" target="_blank" rel="noopener noreferrer">link</a>
+
 
 
 ## 📦 Install dependency
