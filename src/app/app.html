@@ -1,0 +1,138 @@
+<div class="container">
+  <!-- Mode Toggle -->
+  <div class="mode-toggle">
+    <button [class.active]="mode() === 'stopwatch'" (click)="mode.set('stopwatch')">
+      ⏱️ Секундомер
+    </button>
+    <button [class.active]="mode() === 'timer'" (click)="mode.set('timer')">
+      ⏲️ Таймер
+    </button>
+    <button [class.active]="mode() === 'clock'" (click)="mode.set('clock')">
+      📅 День недели
+    </button>
+  </div>
+
+  <!-- Stopwatch Mode -->
+  @if (mode() === 'stopwatch') {
+  <div class="display-card stopwatch">
+    <div class="time-display">
+      <div class="time-main">
+        {{formattedStopwatch().hours}}:{{ formattedStopwatch().minutes }}:{{ formattedStopwatch().seconds }}:{{ formattedStopwatch().milliseconds }}
+      </div>
+    </div>
+
+    <div class="controls">
+      <button class="btn-primary" [class.btn-pause]="stopwatchRunning()" (click)="toggleStopwatchRunning()">
+        {{ stopwatchRunning() ? '⏸ Пауза' : '▶ Старт' }}
+      </button>
+      <button class="btn-secondary" (click)="resetStopwatch()">
+        ↻ Сброс
+      </button>
+    </div>
+
+    <!-- Lap times with new @for syntax -->
+    @if (lapTimes().length > 0) {
+    <div class="laps">
+      <h3>Круги ({{ lapTimes().length }}):</h3>
+      @for (lap of lapTimes(); track $index) {
+      <div class="lap-item">
+        <span class="lap-number">№{{ lapTimes().length - $index }}</span>
+        <span class="lap-time">{{ lap.minutes }}:{{ lap.seconds }}.{{ lap.milliseconds }}</span>
+        <button class="lap-delete-btn" (click)="deleteLap($index)" title="Удалить круг">
+          <img src="/assets/icons/delete.png" alt="delete" width="16" height="16">
+        </button>
+      </div>
+      } @empty {
+      <p class="empty-message">Нет кругов</p>
+      }
+    </div>
+    }
+
+    @if (stopwatchRunning()) {
+    <button class="btn-lap" (click)="recordLap()">
+      🏁 Записать круг
+    </button>
+    }
+  </div>
+  }
+
+  <!-- Timer Mode -->
+  @if (mode() === 'timer') {
+    <div class="display-card">
+      @if (timerRemaining() === 0 && !timerRunning()) {
+        <div class="timer-setup">
+          <label>Установить время</label>
+          <div class="time-inputs">
+            <div class="input-group">
+              <input type="number" [ngModel]="timerMinutes()" (ngModelChange)="setTimerMinutes($event)" min="0" max="59" placeholder="ММ">
+              <span>Минуты</span>
+            </div>
+            <div class="input-group">
+              <input type="number" [ngModel]="timerSeconds()" (ngModelChange)="timerSeconds.set($event)" min="0" max="59" placeholder="СС">
+              <span>Секунды</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Quick Timer Presets -->
+        <div class="quick-timers">
+          <p>Быстрая установка:</p>
+          <div class="preset-buttons">
+            @for (preset of timerPresets; track preset.value) {
+              <button class="btn-preset" (click)="setTimerPreset(preset.minutes, preset.seconds)">
+                {{ preset.label }}
+              </button>
+            }
+          </div>
+        </div>
+      } @else {
+        <div class="time-display">
+          <div class="time-main" [class.timer-complete]="timerComplete()">
+            {{ formattedTimer().minutes }}:{{ formattedTimer().seconds }}:{{ formattedTimer().milliseconds }}
+          </div>
+        </div>
+        @if (timerComplete()) {
+          <div class="timer-alert">⏰ Время вышло!</div>
+        }
+      }
+      <!-- Progress Bar: always visible in timer mode -->
+      <div class="progress-bar">
+        <div class="progress-fill" [style.width.%]="timerProgress()"></div>
+      </div>
+      <div class="controls">
+        @if (!timerRunning() && timerRemaining() === 0) {
+          <button class="btn-primary" [disabled]="timerMinutes() === 0 && timerSeconds() === 0" (click)="startTimer()">▶ Старт</button>
+        } @else {
+          <button class="btn-primary" [class.btn-pause]="timerRunning()" (click)="toggleTimerRunning()">{{ timerRunning() ? '⏸ Пауза' : '▶ Старт' }}</button>
+          <button class="btn-secondary" (click)="resetTimer()">↻ Сброс</button>
+        }
+      </div>
+    </div>
+  }
+  
+  <!-- Clock / Day Mode -->
+  @if (mode() === 'clock') {
+    <div class="display-card">
+      <div class="time-display">
+        <div class="time-main">{{ userDayName() }}</div>
+        <div class="time-ms" style="font-size:20px; margin-top:8px;">{{ currentDateString() }}</div>
+      </div>
+      <div style="margin-top:20px;">
+        <label style="display:block; text-align:center; margin-bottom:8px;">Узнать день недели по дате</label>
+        <div style="display:flex; gap:8px; justify-content:center; align-items:center;">
+          <div class="date-input">
+            <input type="text" [ngModel]="userDateInput()" (ngModelChange)="setUserDate($event)" placeholder="например: 12 сентября 2009" aria-label="Введите дату" />
+            @if (userDateInput()) {
+              <button class="date-clear" (click)="setUserDate('')" aria-label="Очистить">✖</button>
+            }
+          </div>
+        </div>
+        <div style="text-align:center; margin-top:12px;">
+          @if (userDateError()) {
+            <div style="color:#e53e3e; font-weight:600; font-size: small;">{{ userDateError() }}</div>
+          }
+        </div>
+      </div>
+    </div>
+   }
+ </div>
